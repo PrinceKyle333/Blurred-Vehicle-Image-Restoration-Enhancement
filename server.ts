@@ -3,6 +3,7 @@ import express from 'express';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { startPythonBackend } from './src/server/pythonBackend.ts';
 import { createRestorationRouter } from './src/server/restorationRouter.ts';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -11,6 +12,8 @@ const __dirname = path.dirname(__filename);
 const PORT = 3000;
 
 async function startServer() {
+  await startPythonBackend(__dirname);
+
   const app = express();
 
   app.use('/api', createRestorationRouter());
@@ -30,11 +33,23 @@ async function startServer() {
     app.use(vite.middlewares);
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  const server = app.listen(PORT, '0.0.0.0', () => {
     const hasDist = fs.existsSync(path.resolve(__dirname, 'dist'));
     console.log(
-      `Vehicle Image Restoration server listening on http://0.0.0.0:${PORT} (mode=${process.env.NODE_ENV || 'development'}, dist=${hasDist})`
+      `Vehicle Image Restoration server listening on http://localhost:${PORT} (mode=${process.env.NODE_ENV || 'development'}, dist=${hasDist})`
     );
+  });
+
+  server.on('error', (err: NodeJS.ErrnoException) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(
+        `\nPort ${PORT} is already in use - the app is probably already running in another terminal.\n` +
+          `Open http://localhost:${PORT}, or stop the other instance (Ctrl+C in its terminal) and try again.`
+      );
+    } else {
+      console.error('Server error:', err);
+    }
+    process.exit(1);
   });
 }
 

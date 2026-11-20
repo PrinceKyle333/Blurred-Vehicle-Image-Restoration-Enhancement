@@ -6,3 +6,7 @@ coverage/
 *.log
 .env*
 !.env.example
+.venv/
+__pycache__/
+backend/checkpoints/*.pt
+backend/checkpoints/*.pth
