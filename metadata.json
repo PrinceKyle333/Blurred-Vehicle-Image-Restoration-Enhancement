@@ -1,0 +1,6 @@
+{
+  "name": "Vehicle Image Restoration",
+  "description": "Restore blurry vehicle images using DeblurGAN-v2 (GAN), Conditional DDPM (Diffusion), and Restormer (Transformer) deep learning models.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
